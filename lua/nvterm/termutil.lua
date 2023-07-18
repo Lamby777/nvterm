@@ -38,9 +38,14 @@ util.execute_type_cmd = function(type, terminals, override)
 end
 
 util.verify_terminals = function(terminals)
-  terminals.list = vim.tbl_filter(function(term)
-    return vim.api.nvim_buf_is_valid(term.buf)
-  end, terminals.list)
+  for i, term in pairs(terminals.list) do
+    local valid = vim.api.nvim_buf_is_valid(term.buf)
+
+    if not valid then
+      -- TODO filter out nils from list
+      terminals.list[i] = nil
+    end
+  end
 
   terminals.list = vim.tbl_map(function(term)
     term.open = vim.api.nvim_win_is_valid(term.win)
